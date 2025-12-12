@@ -1,0 +1,28 @@
+[
+    {
+        "timestamp": "2025-12-13T02:12:19.145717",
+        "ticker": "BBCA",
+        "strategy": "Stage 2 Breakout",
+        "price": 31603.94678396362,
+        "acc_ratio": 3.0,
+        "top_buyer": "AK",
+        "market_regime": "BULLISH",
+        "status": "APPROVED",
+        "reason": "APPROVED: BULLISH Market. Conviction: HIGH. Risk: 3.0%. Size: 33 Lots.",
+        "lots": 33,
+        "stop_loss": 29800
+    },
+    {
+        "timestamp": "2025-12-13T02:12:38.410283",
+        "ticker": "BBCA",
+        "strategy": "Stage 2 Breakout",
+        "price": 78867.14517644756,
+        "acc_ratio": 3.0,
+        "top_buyer": "AK",
+        "market_regime": "BULLISH",
+        "status": "APPROVED",
+        "reason": "APPROVED: BULLISH Market. Conviction: HIGH. Risk: 3.0%. Size: 11 Lots.",
+        "lots": 11,
+        "stop_loss": 73600
+    }
+]
