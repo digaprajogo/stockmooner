@@ -26,7 +26,7 @@ def run_backtest(ticker: str, initial_capital: float = 100_000_000):
     
     # NOTE: In this simplified backtest, Broker Summary is static (fetched once).
     # For accurate Bandarmology backtest, you need Historical Broker Data.
-    broker_data = loader.get_broker_summary(ticker) 
+    # broker_data = loader.get_broker_summary(ticker) <--- REMOVED to prevent look-ahead bias
     
     if df.empty or len(df) < 150:
         print("Not enough data to run backtest.")
@@ -44,8 +44,17 @@ def run_backtest(ticker: str, initial_capital: float = 100_000_000):
     for i in range(start_index, len(df)):
         # "Slice" the data to simulate "Today" (Avoiding Look-ahead Bias)
         current_slice = df.iloc[:i+1].copy()
-        current_date = current_slice.iloc[-1]['date']
+        current_date_obj = current_slice.iloc[-1]['date']
         current_price = current_slice.iloc[-1]['close']
+        
+        # Konversi tanggal ke string YYYY-MM-DD untuk API
+        date_str = current_date_obj.strftime("%Y-%m-%d")
+        
+        # --- PERUBAHAN PENTING DI SINI ---
+        # Kita panggil Data Bandar sesuai Tanggal Loop (Real Historical Check)
+        # Warning: Ini akan memakan kuota API call lebih banyak!
+        broker_data = loader.get_broker_summary(ticker, date=date_str)
+        # ---------------------------------
         
         # Calculate Indicators on the slice
         current_slice = brain.prepare_indicators(current_slice) 
@@ -123,5 +132,12 @@ def run_backtest(ticker: str, initial_capital: float = 100_000_000):
     print("-" * 30)
 
 if __name__ == "__main__":
-    # Test Run
-    run_backtest("BBCA")
+    print(f"Starting Portfolio Backtest on {len(config.WATCHLIST)} tickers...")
+    
+    for ticker in config.WATCHLIST:
+        try:
+            run_backtest(ticker)
+        except Exception as e:
+            print(f"Skipping {ticker} due to error: {e}")
+            
+    print("\n>>> ALL BACKTESTS COMPLETE <<<")

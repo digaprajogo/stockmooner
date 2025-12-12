@@ -61,37 +61,56 @@ get_ohlcv
             print(f"Connection Error: {e}")
             return pd.DataFrame()
 
-    def get_broker_summary(self, ticker: str) -> Dict:
+    def get_broker_summary(self, ticker: str, date: str = None) -> Dict:
         """
-        Fetches Broker Summary (Bandarmology Data).
-        MOCKS data to test different scenarios.
+        Fetches Broker Summary.
+        If date is provided (YYYY-MM-DD), fetches historical broker data.
+        If date is None, fetches latest data.
         """
+        url = f"https://api.goapi.id/v1/stock/idx/{ticker}/broker_summary"
         
-        # Default Logic
-        scenario = random.choice(['accumulation', 'distribution', 'neutral'])
-        brokers = config.SMART_MONEY + config.RETAIL_CROWD
+        # Default params
+        params = {"api_key": self.api_key}
         
-        if scenario == 'accumulation':
-            top_buyer = random.choice(config.SMART_MONEY)
-            acc_ratio = random.uniform(1.6, 3.5)
-        elif scenario == 'distribution':
-            top_buyer = random.choice(config.RETAIL_CROWD)
-            acc_ratio = random.uniform(0.5, 1.2)
-        else:
-            top_buyer = random.choice(brokers)
-            acc_ratio = random.uniform(0.9, 1.4)
-
-        # Overwrite for BBCA Demo
-        if ticker == 'BBCA':
-             acc_ratio = 3.0
-             top_buyer = 'AK' 
+        # Jika ada request tanggal spesifik (untuk Backtest)
+        if date:
+            params["date"] = date
             
-        return {
-            'ticker': ticker,
-            'top_buyer': top_buyer,
-            'acc_ratio': round(acc_ratio, 2),
-            'date': datetime.now().strftime('%Y-%m-%d')
-        }
+        try:
+            response = requests.get(url, params=params)
+            data = response.json()
+            
+            # Struktur data GoAPI untuk broker summary
+            if data.get('status') == 'success':
+                res_data = data.get('data', {})
+                
+                # Hitung Ratio & Top Buyer dari data asli
+                top_buyers = res_data.get('top_buyers', [])
+                top_sellers = res_data.get('top_sellers', [])
+                
+                if not top_buyers or not top_sellers:
+                    return {'acc_ratio': 0, 'top_buyer': 'Unknown'}
+
+                # Hitung Volume Top 3
+                buy_vol = sum([b['volume'] for b in top_buyers[:3]])
+                sell_vol = sum([s['volume'] for s in top_sellers[:3]])
+                
+                acc_ratio = buy_vol / sell_vol if sell_vol > 0 else 1.0
+                top_buyer = top_buyers[0]['broker_code']
+                
+                return {
+                    'ticker': ticker,
+                    'top_buyer': top_buyer,
+                    'acc_ratio': round(acc_ratio, 2),
+                    'date': date if date else 'Latest'
+                }
+            else:
+                # Jika data kosong/libur, return netral
+                return {'acc_ratio': 0, 'top_buyer': 'Unknown'}
+                
+        except Exception as e:
+            print(f"Broxsum Error: {e}")
+            return {'acc_ratio': 0, 'top_buyer': 'Unknown'}
 
     def get_composite_index(self, days: int = 300) -> pd.DataFrame:
         """
