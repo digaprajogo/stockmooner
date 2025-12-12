@@ -1,9 +1,3 @@
-Tinggal ubah codingan terakhir
-
-dari hanya mencari call dari watchlist, ditambah bisa cari call dari semua saham dibuang liquidity
-
-masukan prompt ini ke antigravity
-
 - **Live Trading (`main.py`):** Gunakan **"Jaring Raksasa"** . Scan 800+ saham, tapi pasang filter likuiditas di depan agar tidak membuang waktu di saham "zombie" (saham gocap mati).
 - **Backtesting (`backtest.py`):** Gunakan **"Sniper Scope"** . Hanya test di watchlist terpilih untuk validasi strategi, karena backtest makan waktu dan kuota.
 
@@ -129,3 +123,11 @@ if __name__ == "__main__":
    - Robot hanya menguji saham yang Anda tulis di `config.py` (misal BBCA, BRMS) untuk memastikan strategi trend & bandarmology-nya valid secara historis.
 
 **Penting:** Saat menjalankan `main.py` pertama kali dengan mode "All Tickers", mungkin butuh waktu 10-20 menit untuk scan seluruh pasar (karena ada jeda koneksi internet). Itu normal. Biarkan laptop menyala.
+
+todo next
+prompt 1: nice! tetapi sepertinya lebih baik bisa custom tiap run, mau all saham atau watchlist aja
+lalu utk backtest menggunakan list config yg berbeda (watchlist hanya untuk cari call)
+
+prompt 2: Tinggal ubah codingan terakhir
+dari hanya mencari call dari watchlist, ditambah bisa cari call dari semua saham dibuang liquidity
+masukan prompt ini ke antigravity

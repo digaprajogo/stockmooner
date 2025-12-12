@@ -1,0 +1,6 @@
+- [ ] Create `config.py`
+- [ ] Create `utils.py`
+- [ ] Create `data_engine.py`
+- [ ] Create `brain.py`
+- [ ] Create `risk_guard.py`
+- [ ] Create `main.py`
